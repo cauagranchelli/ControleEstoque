@@ -43,33 +43,6 @@ npm start
 http://localhost:3000
 ```
 
-## ☁️ Deploy em Nuvem
-
-### Render.com (Recomendado - Gratuito)
-
-1. Crie uma conta em [render.com](https://render.com)
-2. Clique em "New +" → "Web Service"
-3. Conecte seu repositório GitHub
-4. Configure:
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-   - **Environment**: Node
-5. Clique em "Create Web Service"
-
-### Heroku
-
-1. Instale o Heroku CLI
-2. Faça login: `heroku login`
-3. Crie o app: `heroku create nome-do-seu-app`
-4. Faça deploy: `git push heroku main`
-
-### Railway.app
-
-1. Crie uma conta em [railway.app](https://railway.app)
-2. Clique em "New Project" → "Deploy from GitHub"
-3. Selecione o repositório
-4. O deploy é automático!
-
 ## 🎮 Como Usar
 
 ### Ctrl+V Mágico
