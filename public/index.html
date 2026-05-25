@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Estoque</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <h1>Sistema de Controle de Estoque</h1>
+            <div class="header-buttons">
+                <button class="info-toggle" onclick="openInfoModal()" title="Informações do Sistema">
+                    <span class="info-icon">ℹ️</span>
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('estoque')">Estoque</button>
+            <button class="tab-button" onclick="openTab('compras')">Compras</button>
+            <button class="tab-button" onclick="openTab('necessidades')">Necessidades</button>
+            <button class="tab-button" onclick="openTab('producao')">Produção</button>
+            <button class="tab-button" onclick="openTab('dashboard')">Dashboard</button>
+        </div>
+
+        <div id="estoque" class="tab-content active">
+            <div class="form-container">
+                <h2>Adicionar Item ao Estoque</h2>
+                <form id="form-estoque">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Setor</label>
+                            <input type="text" id="setor-estoque">
+                        </div>
+                        <div class="form-group">
+                            <label>Produto *</label>
+                            <input type="text" id="produto-estoque" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Especificação</label>
+                            <input type="text" id="especificacao-estoque">
+                        </div>
+                        <div class="form-group">
+                            <label>NCM</label>
+                            <input type="text" id="ncm-estoque">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantidade Atual</label>
+                            <div class="quantity-control">
+                                <button type="button" onclick="decreaseQuantity('estoque')">-</button>
+                                <input type="number" id="quantidade-estoque" value="0" min="0">
+                                <button type="button" onclick="increaseQuantity('estoque')">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Estoque Mínimo (Alerta)</label>
+                            <input type="number" id="estoque-minimo-estoque" value="0" min="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Unidade de Medida</label>
+                            <select id="unidade-estoque">
+                                <option value="unidade">unidade</option>
+                                <option value="kit">kit</option>
+                                <option value="peça">peça</option>
+                                <option value="pacote">pacote</option>
+                                <option value="caixa">caixa</option>
+                                <option value="metros">metros</option>
+                                <option value="latas">latas</option>
+                                <option value="rolos">rolos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Adicionar ao Estoque</button>
+                </form>
+            </div>
+
+            <div class="filters">
+                <h3>Filtrar por Setor:</h3>
+                <button class="filter-btn active" onclick="filterSetor('todos')">Todos</button>
+                <button class="filter-btn" onclick="filterSetor('Ferragens')">Ferragens</button>
+                <button class="filter-btn" onclick="filterSetor('Madeiras')">Madeiras</button>
+                <button class="filter-btn" onclick="filterSetor('Elétrica')">Elétrica</button>
+                <button class="filter-btn" onclick="filterSetor('Pintura')">Pintura</button>
+                <button class="btn-delete" style="float: right; margin: 5px;" onclick="limparEstoque()">🗑️ Limpar Todo Estoque</button>
+            </div>
+
+            <div class="table-container">
+                <h2>Itens em Estoque</h2>
+                <table id="tabela-estoque">
+                    <thead>
+                        <tr>
+                            <th>Setor</th>
+                            <th>Produto</th>
+                            <th>Especificação</th>
+                            <th>Quantidade</th>
+                            <th>Estoque Mínimo</th>
+                            <th>NCM</th>
+                            <th>Unidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-estoque"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="compras" class="tab-content">
+            <div class="form-container">
+                <h2>Registrar Compra</h2>
+                <form id="form-compras">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Setor</label>
+                            <input type="text" id="setor-compras">
+                        </div>
+                        <div class="form-group">
+                            <label>Produto *</label>
+                            <input type="text" id="produto-compras" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Especificação</label>
+                            <input type="text" id="especificacao-compras">
+                        </div>
+                        <div class="form-group">
+                            <label>NCM</label>
+                            <input type="text" id="ncm-compras">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantidade</label>
+                            <div class="quantity-control">
+                                <button type="button" onclick="decreaseQuantity('compras')">-</button>
+                                <input type="number" id="quantidade-compras" value="0" min="0">
+                                <button type="button" onclick="increaseQuantity('compras')">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Estoque Mínimo</label>
+                            <input type="number" id="estoque-minimo-compras" value="0" min="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Unidade de Medida</label>
+                            <select id="unidade-compras">
+                                <option value="unidade">unidade</option>
+                                <option value="kit">kit</option>
+                                <option value="peça">peça</option>
+                                <option value="pacote">pacote</option>
+                                <option value="caixa">caixa</option>
+                                <option value="metros">metros</option>
+                                <option value="latas">latas</option>
+                                <option value="rolos">rolos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valor Total da Compra *</label>
+                            <input type="number" id="valor-compras" step="0.01" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Registrar Compra</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <h2>Histórico de Compras
+                    <button class="btn-delete" style="float: right; margin-left: 10px;" onclick="limparCompras()">🗑️ Limpar Histórico</button>
+                </h2>
+                <table id="tabela-compras">
+                    <thead>
+                        <tr>
+                            <th>Setor</th>
+                            <th>Produto</th>
+                            <th>Especificação</th>
+                            <th>Quantidade</th>
+                            <th>NCM</th>
+                            <th>Unidade</th>
+                            <th>Valor Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-compras"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="necessidades" class="tab-content">
+            <div class="alert-info">
+                <h2>⚠️ Produtos que Precisam de Reposição</h2>
+                <p>Esta lista mostra automaticamente produtos cuja quantidade atual está menor ou igual ao Estoque Mínimo configurado.</p>
+            </div>
+            <div class="table-container">
+                <table id="tabela-necessidades">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Setor</th>
+                            <th>Quantidade Atual</th>
+                            <th>Estoque Mínimo</th>
+                            <th>Quantidade Faltante</th>
+                            <th>Urgência</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-necessidades"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="producao" class="tab-content">
+            <div class="form-container">
+                <h2>Criar Novo Kit de Produção</h2>
+                <form id="form-kit">
+                    <div class="form-group">
+                        <label>Nome do Kit *</label>
+                        <input type="text" id="nome-kit" required placeholder="Ex: Stand Padrão A">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="descricao-kit" placeholder="Ex: Kit completo para stand">
+                    </div>
+                    <h3>Itens do Kit</h3>
+                    <div id="itens-kit">
+                        <div class="kit-item">
+                            <input type="text" placeholder="Nome do Produto" class="kit-produto" required>
+                            <input type="number" placeholder="Qtd" class="kit-quantidade" min="1" value="1" required>
+                            <button type="button" class="btn-remove-item" onclick="removeKitItem(this)">X</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-item" onclick="addKitItem()">+ Adicionar Item</button>
+                    <button type="submit" class="btn-submit">Criar Kit</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <h2>Kits Cadastrados</h2>
+                <div id="lista-kits"></div>
+            </div>
+
+            <div class="form-container" style="margin-top: 30px;">
+                <h2>🔄 Retorno de Evento (Logística Reversa)</h2>
+                <p style="color: #666; margin-bottom: 15px;">Selecione um projeto finalizado para processar o retorno dos materiais:</p>
+                <div id="lista-projetos-retorno"></div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="tab-content">
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Total de Itens</h3>
+                    <p class="card-value" id="total-itens">0</p>
+                </div>
+                <div class="card">
+                    <h3>Produtos em Falta</h3>
+                    <p class="card-value" id="produtos-falta">0</p>
+                </div>
+                <div class="card">
+                    <h3>Valor Total Gasto</h3>
+                    <p class="card-value" id="valor-total">R$ 0,00</p>
+                </div>
+            </div>
+
+            <div class="projetos-container">
+                <h2>📊 Custo Real por Projeto</h2>
+                <div id="lista-projetos-custos"></div>
+            </div>
+
+            <div class="historico-container">
+                <h2>Histórico de Ações</h2>
+                <div id="lista-historico"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-compra" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Registrar Compra</h2>
+            <form id="form-compra-necessidade">
+                <input type="hidden" id="produto-necessidade">
+                <div class="form-group">
+                    <label>Quantidade a Comprar *</label>
+                    <input type="number" id="quantidade-necessidade" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor Total *</label>
+                    <input type="number" id="valor-necessidade" step="0.01" required>
+                </div>
+                <button type="submit" class="btn-submit">Confirmar Compra</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-retorno" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeModalRetorno()">&times;</span>
+            <h2>🔄 Retorno de Evento</h2>
+            <div id="retorno-projeto-info"></div>
+            <form id="form-retorno">
+                <input type="hidden" id="index-projeto-retorno">
+                <div id="itens-retorno"></div>
+                <button type="submit" class="btn-submit">Processar Retorno</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-info" class="modal-glass">
+        <div class="modal-glass-content">
+            <span class="close-glass" onclick="closeInfoModal()">&times;</span>
+            <canvas id="three-canvas"></canvas>
+            <div class="info-overlay">
+                <h2 id="author-text" class="author-title">Criado por Cauã Granchelli</h2>
+                <p class="version-text">Versão 2.26.1.1</p>
+                
+                <div class="server-status">
+                    <h3>Status do Servidor</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="status-label">Ping/Latência:</span>
+                            <span class="status-value" id="ping-value">-- ms</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Terminais Sincronizados:</span>
+                            <span class="status-value" id="clients-value">--</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Uptime:</span>
+                            <span class="status-value" id="uptime-value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="changelog-section">
+                    <h3>Changelog - Novidades</h3>
+                    <div id="changelog-text" class="changelog-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-paste" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeModalPaste()">&times;</span>
+            <h2>📋 Processamento Inteligente de Dados</h2>
+            <div class="paste-header-actions">
+                <button class="btn-paste-entrada-top" onclick="processarPaste('entrada')">
+                    <span style="font-size: 1.5em;">⬆️</span>
+                    <span>Dar Entrada<br><small>Adicionar ao Estoque</small></span>
+                </button>
+                <button class="btn-paste-saida-top" onclick="processarPaste('saida')">
+                    <span style="font-size: 1.5em;">⬇️</span>
+                    <span>Dar Baixa<br><small>Remover do Estoque</small></span>
+                </button>
+            </div>
+            <p class="paste-subtitle">Itens detectados na área de transferência:</p>
+            <div id="paste-items-list" class="paste-items-container"></div>
+        </div>
+    </div>
+
+    <div id="modal-paste-compras" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeModalPasteCompras()">&times;</span>
+            <h2>💰 Registrar Compras em Lote</h2>
+            <div class="paste-header-actions">
+                <button class="btn-paste-entrada-top" onclick="processarPasteCompras()" style="max-width: 100%;">
+                    <span style="font-size: 1.5em;">💸</span>
+                    <span>Registrar Todas as Compras<br><small>Adicionar ao Histórico e Atualizar Estoque</small></span>
+                </button>
+            </div>
+            <p class="paste-subtitle">Compras detectadas na área de transferência:</p>
+            <div id="paste-compras-items-list" class="paste-items-container"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
